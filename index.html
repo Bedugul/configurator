@@ -21,7 +21,6 @@
     * { box-sizing: border-box; }
     body { margin: 0; background: var(--paper); color: var(--ink); font-family: Inter, sans-serif; font-size: 16px; }
     header { background: linear-gradient(135deg, var(--navy), var(--navy2)); color: white; padding: 14px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid var(--sky); }
-    .brand { display: flex; align-items: center; gap: 13px; }
     .brand h1 { font-size: 1.35rem; margin: 0; }
     .brand small { display: block; color: #aec8d8; }
     .route-tabs { display: flex; background: #061522; padding: 4px; border-radius: 11px; }
@@ -37,15 +36,16 @@
     .card-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
     .card-body { padding: 14px; }
     .palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .volume { min-height: 44px; border: 1px solid #8bb1c5; background: var(--paper); color: var(--ink); border-radius: 9px; font-weight: 850; display: grid; place-items: center; cursor: pointer; user-select: none; }
+    .volume { min-height: 44px; border: 1px solid #8bb1c5; background: var(--paper); color: var(--ink); border-radius: 9px; font-weight: 850; display: grid; place-items: center; cursor: grab; user-select: none; }
     .volume.used { opacity: .25; pointer-events: none; }
-    .volume.special { border-color: #ab93e7; color: #5427a8; background: #f7f3ff; }
+    .volume.dragging { opacity: .4; }
     .positions { padding: 12px; display: grid; gap: 9px; max-height: calc(100vh - 175px); overflow: auto; }
     .position { display: grid; grid-template-columns: 42px 1fr 116px auto auto; gap: 9px; align-items: center; min-height: 62px; }
     .pos-num { width: 34px; height: 34px; border-radius: 10px; background: var(--pos-num-bg); display: grid; place-items: center; font-weight: 900; }
-    .dropzone { min-height: 56px; border: 1.5px dashed var(--muted); border-radius: 11px; background: var(--dropzone-bg); padding: 7px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .dropzone { min-height: 56px; border: 1.5px dashed var(--muted); border-radius: 11px; background: var(--dropzone-bg); padding: 7px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; transition: .15s; }
+    .dropzone.over { border-color: var(--blue); background: #e7f6fd; }
     .dropzone.empty:after { content: 'Arrastra aquí'; color: var(--muted); margin: auto; font-size: .82rem; }
-    .placed { border: 1px solid #77a6be; background: var(--btn-bg); border-radius: 7px; padding: 7px 9px; font-weight: 850; cursor: pointer; }
+    .placed { border: 1px solid #77a6be; background: var(--btn-bg); border-radius: 7px; padding: 7px 9px; font-weight: 850; cursor: grab; }
     .group-name { min-height: 42px; border-radius: 9px; background: #0b2940; color: white; display: grid; place-items: center; font-weight: 900; text-align: center; }
     .group-name.unknown { background: #f5e8db; color: #8a4510; }
     .action-icon { border: 0; background: transparent; color: var(--muted); font-size: 1.1rem; cursor: pointer; width: 32px; height: 32px; }
@@ -168,7 +168,7 @@
       }
     };
 
-    let route = 'R1', positions = emptyPositions(), constraintMessage = null;
+    let route = 'R1', positions = emptyPositions(), dragged = null;
     const $ = s => document.querySelector(s);     const $$ = s => [...document.querySelectorAll(s)];
     const sortKey = a => [...a].sort().join('|');
     const configs = () => data.configs[route];
@@ -194,16 +194,24 @@
     function place(name, index) {
       const next = positions.map(p => p.filter(x => x !== name));
       next[index].push(name);
-      positions = next; constraintMessage = null; render();
+      positions = next; render();
     }
 
     function renderPalette() {
       const u = used();
       $('#palette').innerHTML = volumes().map(v => 
-        `<button class="volume ${u.has(v) ? 'used' : ''}" data-volume="${v}">${v}</button>`
+        `<button class="volume ${u.has(v) ? 'used' : ''}" draggable="${!u.has(v)}" data-volume="${v}">${v}</button>`
       ).join('');
       $('#availableCount').textContent = `${volumes().length - u.size} disponibles`;
-      $$('.volume').forEach(el => el.addEventListener('click', () => place(el.dataset.volume, positions.findIndex(p => p.length === 0))));
+
+      $$('.volume').forEach(el => {
+        el.addEventListener('dragstart', e => {
+          dragged = el.dataset.volume;
+          e.dataTransfer.setData('text/plain', dragged);
+          el.classList.add('dragging');
+        });
+        el.addEventListener('dragend', () => { dragged = null; el.classList.remove('dragging'); });
+      });
     }
 
     function renderPositions() {
@@ -213,21 +221,24 @@
           <div class="position">
             <div class="pos-num">${i + 1}</div>
             <div class="dropzone ${p.length ? '' : 'empty'}" data-index="${i}">
-              ${p.map(v => `<button class="placed" data-placed="${v}">${v}</button>`).join('')}
+              ${p.map(v => `<button class="placed" draggable="true" data-placed="${v}">${v}</button>`).join('')}
             </div>
             <div class="group-name ${p.length && !name ? 'unknown' : ''}">
               ${p.length ? (name || 'Sin agrupar') : '—'}
             </div>
-            <button class="action-icon" data-clear="${i}">🧹</button>
-            <button class="action-icon" data-remove="${i}">×</button>
+            <button class="action-icon" data-clear="${i}" title="Vaciar">🧹</button>
+            <button class="action-icon" data-remove="${i}" title="Eliminar">×</button>
           </div>
         `;
       }).join('');
 
-      $$('.placed').forEach(el => el.addEventListener('click', e => {
-        positions = positions.map(p => p.filter(x => x !== e.target.dataset.placed));
-        render();
-      }));
+      $$('.dropzone').forEach(z => {         const i = Number(z.dataset.index);         z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });         z.addEventListener('dragleave', () => z.classList.remove('over'));         z.addEventListener('drop', e => {           e.preventDefault(); z.classList.remove('over');           const name = e.dataTransfer.getData('text/plain') \vert{}\vert{} dragged;           if (name) place(name, i);         });       });        $$
+('.placed').forEach(el => {
+        el.addEventListener('dragstart', e => {
+          dragged = e.target.dataset.placed;
+          e.dataTransfer.setData('text/plain', dragged);
+        });
+      });
 
       $$('[data-clear]').forEach(b => b.addEventListener('click', e => {         positions[Number(e.target.dataset.clear)] = []; render();       }));        $$
 ('[data-remove]').forEach(b => b.addEventListener('click', e => {
@@ -243,7 +254,7 @@
       const active = positions.filter(p => p.length);
       const names = active.map(groupName);
       const unknown = names.filter(x => !x).length;
-      let match = null;
+      let match = result = null;
 
       if (active.length && !unknown) {
         match = configs().find(c => sortKey(c.sectors) === sortKey(names)) || null;
@@ -277,7 +288,7 @@
     $('#addPos').addEventListener('click', () => { if (positions.length < MAX_POSITIONS) { positions.push([]); render(); } });
     $('#reset').addEventListener('click', () => { positions = emptyPositions(); render(); });
     $('#loadConfig').addEventListener('click', () => {
-      const c = configs()[Number($('#configSelect').value)];
+      const c = configs()[Number($('#configSelect'].value \vert{}\vert{} $('#configSelect').value)];
       if (!c) return;
       positions = c.sectors.map(s => data.aggregations[route][s] || [s]);
       while (positions.length < MAX_POSITIONS) positions.push([]);
