@@ -137,7 +137,7 @@
           {code: "4A", sectors: ["CJI", "TLI", "TZI", "ZMI"]}, {code: "4B1", sectors: ["CZI", "TLI", "ZML", "ZUM"]}, {code: "4B2", sectors: ["CZI", "TLI", "ZLM", "ZMU"]}, {code: "4C", sectors: ["CZI", "TLL", "TLU", "ZMI"]},
           {code: "5A1", sectors: ["CJI", "TLI", "TZI", "ZML", "ZUM"]}, {code: "5A2", sectors: ["CJI", "TLI", "TZI", "ZLM", "ZMU"]}, {code: "5B", sectors: ["CJL", "CJU", "TLI", "TZI", "ZMI"]}, {code: "5C", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZMI"]}, {code: "5D", sectors: ["CJI", "TLL", "TLU", "TZI", "ZMI"]},
           {code: "6A1", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZML", "ZUM"]}, {code: "6A2", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]}, {code: "6B1", "sectors": ["CJL", "CJU", "TLI", "TZI", "ZML", "ZUM"]}, {code: "6B2", "sectors": ["CJL", "CJU", "TLI", "TZI", "ZLM", "ZMU"]}, {code: "6C", "sectors": ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZMI"]}, {code: "6D1", "sectors": ["CJI", "TLL", "TLU", "TZI", "ZML", "ZUM"]}, {code: "6D2", "sectors": ["CJI", "TLL", "TLU", "TZI", "ZLM", "ZMU"]}, {code: "6E", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZMI"]}, {code: "6F", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZMI"]},
-          {code: "7A1", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"]}, {code: "7A2", "sectors": ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]}, {code: "7B1", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]}, {code: "7B2", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]}, {code: "7C1", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZML", "ZUM"]}, {code: "7C2", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZLM", "ZMU"]}, {code: "7D", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZMI"]},
+          {code: "7A1", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"]}, {code: "7A2", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]}, {code: "7B1", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]}, {code: "7B2", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]}, {code: "7C1", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZML", "ZUM"]}, {code: "7C2", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZLM", "ZMU"]}, {code: "7D", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZMI"]},
           {code: "8A1", sectors: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]}, {code: "8A2", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]}
         ]
       },
@@ -199,6 +199,8 @@
       const next = positions.map(p => p.filter(x => x !== name));
       if (index >= 0 && index < next.length) {
         next[index].push(name);
+        // Ordenar alfabéticamente los elementos dentro de la casilla para asegurar coincidencia exacta
+        next[index].sort();
       }
       positions = next;
       selectedVolume = null;
@@ -311,7 +313,11 @@
       const selectVal = Number($('#configSelect').value);
       const c = configs()[selectVal];
       if (!c) return;
-      positions = c.sectors.map(s => data.aggregations[route][s] ? [...data.aggregations[route][s]] : [s]);
+      positions = c.sectors.map(s => {
+        let parts = data.aggregations[route][s] ? [...data.aggregations[route][s]] : [s];
+        parts.sort();
+        return parts;
+      });
       while (positions.length < MAX_POSITIONS) positions.push([]);
       selectedVolume = null;
       render();
