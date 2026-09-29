@@ -6,7 +6,6 @@
   <meta name="description" content="Configurador visual de posiciones de control de Ruta 1 y Ruta 2.">
   <title>Configureitor Ruta</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23081729'/%3E%3Cpath d='M13 19h38M13 32h38M13 45h38' stroke='%236bd5ff' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='25' cy='19' r='6' fill='white'/%3E%3Ccircle cx='39' cy='32' r='6' fill='white'/%3E%3Ccircle cx='29' cy='45' r='6' fill='white'/%3E%3C/svg%3E">
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --navy: #071a2b; --navy2: #0b2c47; --sky: #65d5ff; --blue: #087fb5;
@@ -246,7 +245,7 @@
         <div id="result" class="result">
           <div class="result-label">Configuración</div>
           <div id="resultCode" class="result-code">—</div>
-          <div id="resultState" class="result-state">Cargando datos...</div>
+          <div id="resultState" class="result-state">Distribuye los volúmenes para identificar la configuración.</div>
         </div>
         <div class="groups-list">
           <h3>Agrupaciones activas</h3>
@@ -268,10 +267,132 @@
   <script>
     const MAX_POSITIONS = 10;
     const emptyPositions = () => Array.from({ length: MAX_POSITIONS }, () => []);
-    let data = { configs: {R1: [], R2: []}, volumes: {R1: [], R2: []}, aggregations: {R1: {}, R2: {}}, variants: {R1: {}, R2: {}} };
+    
+    // Datos integrados directamente para evitar fallos externos de red
+    const data = {
+      "configs": {
+        "R1": [
+          {"code": "1A", "sectors": ["R1I"]},
+          {"code": "2A", "sectors": ["DPI", "SAB"]},
+          {"code": "2B", "sectors": ["BDP", "SAI"]},
+          {"code": "3A", "sectors": ["DGI", "PAI", "SAB"]},
+          {"code": "3B", "sectors": ["BLI", "DPI", "SAI"]},
+          {"code": "3C", "sectors": ["BDI", "PAI", "SAI"]},
+          {"code": "3D", "sectors": ["ASI", "BDP", "SAN"]},
+          {"code": "4A", "sectors": ["BLI", "DGI", "PAI", "SAI"]},
+          {"code": "4B", "sectors": ["ASI", "BLI", "DPI", "SAN"]},
+          {"code": "4C", "sectors": ["ASI", "BDI", "PAI", "SAN"]},
+          {"code": "4D", "sectors": ["ASU", "BDP", "SUM", "SAS"]},
+          {"code": "4E", "sectors": ["BDI", "PAL", "PAU", "SAI"]},
+          {"code": "5A", "sectors": ["ASI", "BLI", "DGI", "PAI", "SAN"]},
+          {"code": "5B", "sectors": ["BLI", "DGI", "PAL", "PAU", "SAI"]},
+          {"code": "5C", "sectors": ["BLI", "DGL", "DGU", "PAI", "SAI"]},
+          {"code": "5D", "sectors": ["ASU", "BDI", "PAI", "SUM", "SAS"]},
+          {"code": "5E", "sectors": ["ASU", "BLI", "DPI", "SUM", "SAS"]},
+          {"code": "5F", "sectors": ["ASI", "BDI", "PAL", "PAU", "SAN"]},
+          {"code": "6A", "sectors": ["ASI", "BLI", "DGL", "DGU", "PAI", "SAN"]},
+          {"code": "6B", "sectors": ["ASI", "BLI", "DGI", "PAL", "PAU", "SAN"]},
+          {"code": "6C", "sectors": ["BLI", "DGL", "DGU", "PAL", "PAU", "SAI"]},
+          {"code": "6D", "sectors": ["BLL", "BLU", "DGL", "DGU", "PAI", "SAI"]},
+          {"code": "6E", "sectors": ["BLL", "BLU", "DGI", "PAL", "PAU", "SAI"]},
+          {"code": "6F1", "sectors": ["ASL", "ASU", "BLI", "DGI", "PAI", "SAN"]},
+          {"code": "6F2", "sectors": ["ASU", "BLI", "DGI", "PAI", "SUM", "SAS"]},
+          {"code": "6G", "sectors": ["ASI", "BLL", "BLU", "DGI", "PAI", "SAN"]},
+          {"code": "7A", "sectors": ["ASI", "BLI", "DGL", "DGU", "PAL", "PAU", "SAN"]},
+          {"code": "7B", "sectors": ["ASI", "BLL", "BLU", "DGL", "DGU", "PAI", "SAN"]},
+          {"code": "7C", "sectors": ["ASI", "BLL", "BLU", "DGI", "PAL", "PAU", "SAN"]},
+          {"code": "7D", "sectors": ["BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAI"]},
+          {"code": "7E1", "sectors": ["ASL", "ASU", "BLI", "DGL", "DGU", "PAI", "SAN"]},
+          {"code": "7E2", "sectors": ["ASU", "BLI", "DGL", "DGU", "PAI", "SUM", "SAS"]},
+          {"code": "7F1", "sectors": ["ASL", "ASU", "BLI", "DGI", "PAL", "PAU", "SAN"]},
+          {"code": "7F2", "sectors": ["ASU", "BLI", "DGI", "PAL", "PAU", "SUM", "SAS"]},
+          {"code": "7G1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGI", "PAI", "SAN"]},
+          {"code": "7G2", "sectors": ["ASU", "BLL", "BLU", "DGI", "PAI", "SUM", "SAS"]},
+          {"code": "8A", "sectors": ["ASI", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAN"]},
+          {"code": "8B1", "sectors": ["ASL", "ASU", "BLI", "DGL", "DGU", "PAL", "PAU", "SAN"]},
+          {"code": "8B2", "sectors": ["ASU", "BLI", "DGL", "DGU", "PAL", "PAU", "SUM", "SAS"]},
+          {"code": "8C1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAI", "SAN"]},
+          {"code": "8C2", "sectors": ["ASU", "BLL", "BLU", "DGL", "DGU", "PAI", "SUM", "SAS"]},
+          {"code": "8D1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGI", "PAL", "PAU", "SAN"]},
+          {"code": "8D2", "sectors": ["ASU", "BLL", "BLU", "DGI", "PAL", "PAU", "SUM", "SAS"]},
+          {"code": "9A1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAN"]},
+          {"code": "9A2", "sectors": ["ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SUM", "SAS"]}
+        ],
+        "R2": [
+          {"code": "1A", "sectors": ["R2I"]},
+          {"code": "2A", "sectors": ["CZI", "ZTI"]},
+          {"code": "2B", "sectors": ["SWI", "TZI"]},
+          {"code": "2C", "sectors": ["SEI", "ZMI"]},
+          {"code": "3A", "sectors": ["TCI", "TZI", "ZMI"]},
+          {"code": "3B", "sectors": ["CJI", "TZI", "ZTI"]},
+          {"code": "3C", "sectors": ["CZI", "TLI", "ZMI"]},
+          {"code": "4A", "sectors": ["CJI", "TLI", "TZI", "ZMI"]},
+          {"code": "4B1", "sectors": ["CZI", "TLI", "ZML", "ZUM"]},
+          {"code": "4B2", "sectors": ["CZI", "TLI", "ZLM", "ZMU"]},
+          {"code": "4C", "sectors": ["CZI", "TLL", "TLU", "ZMI"]},
+          {"code": "5A1", "sectors": ["CJI", "TLI", "TZI", "ZML", "ZUM"]},
+          {"code": "5A2", "sectors": ["CJI", "TLI", "TZI", "ZLM", "ZMU"]},
+          {"code": "5B", "sectors": ["CJL", "CJU", "TLI", "TZI", "ZMI"]},
+          {"code": "5C", "sectors": ["CJI", "TER", "TLI", "ZGZ", "ZMI"]},
+          {"code": "5D", "sectors": ["CJI", "TLL", "TLU", "TZI", "ZMI"]},
+          {"code": "6A1", "sectors": ["CJI", "TER", "TLI", "ZGZ", "ZML", "ZUM"]},
+          {"code": "6A2", "sectors": ["CJI", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]},
+          {"code": "6B1", "sectors": ["CJL", "CJU", "TLI", "TZI", "ZML", "ZUM"]},
+          {"code": "6B2", "sectors": ["CJL", "CJU", "TLI", "TZI", "ZLM", "ZMU"]},
+          {"code": "6C", "sectors": ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZMI"]},
+          {"code": "6D1", "sectors": ["CJI", "TLL", "TLU", "TZI", "ZML", "ZUM"]},
+          {"code": "6D2", "sectors": ["CJI", "TLL", "TLU", "TZI", "ZLM", "ZMU"]},
+          {"code": "6E", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZMI"]},
+          {"code": "6F", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZMI"]},
+          {"code": "7A1", "sectors": ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"]},
+          {"code": "7A2", "sectors": ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]},
+          {"code": "7B1", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]},
+          {"code": "7B2", "sectors": ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]},
+          {"code": "7C1", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZML", "ZUM"]},
+          {"code": "7C2", "sectors": ["CJL", "CJU", "TLL", "TLU", "TZI", "ZLM", "ZMU"]},
+          {"code": "7D", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZMI"]},
+          {"code": "8A1", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]},
+          {"code": "8A2", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]}
+        ]
+      },
+      "volumes": {
+        "R1": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
+        "R2": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZMM", "ZMU", "ZNL", "ZNU", "ZSL", "ZSU"]
+      },
+      "aggregations": {
+        "R1": {
+          "ASL": ["ASL"], "ASU": ["ASU"], "BLL": ["BLL"], "BLU": ["BLU"], "DGL": ["DGL"], "DGU": ["DGU"], "PAL": ["PAL"], "PAU": ["PAU"],
+          "ABI": ["ASL", "ASU", "BLL", "BLU"], "ASI": ["ASL", "ASU"], "BDI": ["BLL", "BLU", "DGL", "DGU"],
+          "BDP": ["BLL", "BLU", "DGL", "DGU", "PAL", "PAU"], "BLI": ["BLL", "BLU"], "DGI": ["DGL", "DGU"],
+          "DPI": ["DGL", "DGU", "PAL", "PAU"], "NEI": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
+          "PAI": ["PAL", "PAU"], "R1I": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
+          "SAB": ["ASL", "ASU", "BLL", "BLU"], "SAI": ["ASL", "ASU"], "SAN": [], "SUM": [], "SAS": ["ASL"]
+        },
+        "R2": {
+          "CJL": ["CJL"], "CJU": ["CJU"], "TER": ["TER"], "TLL": ["TLL"], "TLU": ["TLU"], "ZGZ": ["ZGZ"],
+          "ZML": ["ZML"], "ZMM": ["ZMM"], "ZMU": ["ZMU"], "ZNL": ["ZNL"], "ZNU": ["ZNU"], "ZSL": ["ZSL"], "ZSU": ["ZSU"],
+          "CJI": ["CJL", "CJU"], "CZI": ["CJU", "TER", "ZGZ"],
+          "R2I": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZMM", "ZMU"],
+          "SEI": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ"],
+          "SWI": ["CJL", "CJU", "TLL", "TLU", "ZML", "ZMM", "ZMU"],
+          "TCI": ["CJL", "CJU", "TLL", "TLU"], "TLI": ["TLL", "TLU"], "TZI": ["TER", "ZGZ"],
+          "ZLM": ["ZML", "ZMM"], "ZMI": ["ZML", "ZMM", "ZMU"],
+          "ZTI": ["TLL", "TLU", "ZML", "ZMM", "ZMU"], "ZUM": ["ZMM", "ZMU"],
+          "ZNI": ["ZNL", "ZNU"], "ZSI": ["ZSL", "ZSU"]
+        }
+      },
+      "variants": {
+        "R2": {
+          "ZLM": [["ZSL", "ZNL"]],
+          "ZMU": [["ZMU"], ["ZNU", "ZSU"]]
+        }
+      }
+    };
+
     let route = 'R1', positions = emptyPositions(), selected = null, dragged = null, constraintMessage = null;
     
-    const $ = s => document.querySelector(s);     const $$ = s => [...document.querySelectorAll(s)];
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
     const sortKey = a => [...a].sort().join('|');
     const configs = () => data.configs[route];
     const volumes = () => data.volumes[route];
@@ -286,7 +407,20 @@
       document.body.classList.toggle('dark-theme');
       const isDark = document.body.classList.contains('dark-theme');
       localStorage.setItem('configureitor_theme', isDark ? 'dark' : 'light');
-      $('#themeToggle').textContent = isDark ? '☀️' : '🌙';     });      function saveState() {       localStorage.setItem('configureitor_route', route);       localStorage.setItem('configureitor_positions', JSON.stringify(positions));     }      function loadState() {       const savedRoute = localStorage.getItem('configureitor_route');       const savedPos = localStorage.getItem('configureitor_positions');       if (savedRoute && (savedRoute === 'R1' \vert{}\vert{} savedRoute === 'R2')) {         route = savedRoute;         $$('.route-tab').forEach(b => b.classList.toggle('active', b.dataset.route === route));
+      $('#themeToggle').textContent = isDark ? '☀️' : '🌙';
+    });
+
+    function saveState() {
+      localStorage.setItem('configureitor_route', route);
+      localStorage.setItem('configureitor_positions', JSON.stringify(positions));
+    }
+
+    function loadState() {
+      const savedRoute = localStorage.getItem('configureitor_route');
+      const savedPos = localStorage.getItem('configureitor_positions');
+      if (savedRoute && (savedRoute === 'R1' || savedRoute === 'R2')) {
+        route = savedRoute;
+        $$('.route-tab').forEach(b => b.classList.toggle('active', b.dataset.route === route));
       }
       if (savedPos) {
         try {
@@ -489,59 +623,11 @@
     $('#reset').addEventListener('click', () => { positions = emptyPositions(); constraintMessage = null; selected = null; render(); });
     $('#loadConfig').addEventListener('click', loadConfiguration);     $$('.route-tab').forEach(b => b.addEventListener('click', () => setRoute(b.dataset.route)));
 
-    async function readCSV(filename) {
-      const res = await fetch(filename);
-      const text = await res.text();
-      const wb = XLSX.read(text, { type: 'string' });
-      const sheet = wb.Sheets[wb.SheetNames[0]];
-      return XLSX.utils.sheet_to_json(sheet);
-    }
-
-    async function initApp() {
-      try {
-        const cfgData = await readCSV('configuraciones.csv');
-        const agrData = await readCSV('agrupaciones.csv');
-        const volData = await readCSV('volumenes.csv');
-        const varData = await readCSV('variantes.csv');
-
-        cfgData.forEach(r => {
-          if(!r.Ruta) return;
-          data.configs[r.Ruta].push({
-            code: String(r.Codigo || r.Código).trim(),
-            sectors: String(r.Sectores).split(',').map(s => s.trim())
-          });
-        });
-
-        agrData.forEach(r => {
-          if(!r.Ruta || !r.Nombre) return;
-          const partesStr = r.Partes ? String(r.Partes).trim() : '';
-          data.aggregations[r.Ruta][r.Nombre] = partesStr ? partesStr.split(',').map(s => s.trim()) : [];
-        });
-
-        volData.forEach(r => {
-          if(!r.Ruta || !r.Volumen) return;
-          data.volumes[r.Ruta].push(String(r.Volumen).trim());
-        });
-
-        varData.forEach(r => {
-          if(!r.Ruta || !r.Nombre) return;
-          data.variants[r.Ruta][r.Nombre] = data.variants[r.Ruta][r.Nombre] || [];
-          data.variants[r.Ruta][r.Nombre].push(String(r.Variante).split(',').map(s => s.trim()));
-        });
-
-        loadState();
-        renderSelect();
-        render();
-        $('#resultState').textContent = 'Distribuye los volúmenes para identificar la configuración.';
-      } catch (err) {
-        console.error(err);
-        $('#resultCode').textContent = 'ERROR';
-        $('#resultState').textContent = 'No se pudieron cargar los archivos CSV. Comprueba que están en la misma carpeta.';
-      }
-    }
-
+    // Inicialización directa
+    loadState();
+    renderSelect();
+    render();
     initTheme();
-    initApp();
   </script>
 </body>
 </html>
