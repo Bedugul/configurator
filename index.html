@@ -36,7 +36,6 @@
     .card-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
     .card-body { padding: 14px; }
     
-    /* Configuración de color para Volúmenes y Casillas */
     .volume, .placed {
       --current-bg: var(--fam-bg, var(--paper));
       --current-border: var(--fam-border, #8bb1c5);
@@ -106,7 +105,7 @@
     <div class="toolbar">
       <div style="color:var(--muted)">Arrastra los volúmenes o haz clic para seleccionarlos y colocarlos.</div>
       <div>
-        <button class="btn" id="exportBtn">📋 Exportar</button>
+        <button class="btn" id="exportBtn">&#128203; Exportar</button>
         <button class="btn primary" id="addPos">+ Posición</button>
         <button class="btn danger" id="reset">Limpiar</button>
       </div>
@@ -145,26 +144,91 @@
     const MAX_POSITIONS = 10;
     const emptyPositions = () => Array.from({ length: MAX_POSITIONS }, () => []);
     
+    // Los datos se han formateado con saltos de línea para evitar errores de sintaxis en el editor
     const data = {
       configs: {
         R1: [
-          {code: "1A", sectors: ["R1I"]}, {code: "2A", sectors: ["DPI", "SAB"]}, {code: "2B", sectors: ["BDP", "SAI"]},
-          {code: "3A", sectors: ["DGI", "PAI", "SAB"]}, {code: "3B", sectors: ["BLI", "DPI", "SAI"]}, {code: "3C", sectors: ["BDI", "PAI", "SAI"]}, {code: "3D", sectors: ["ASI", "BDP", "SAN"]},
-          {code: "4A", sectors: ["BLI", "DGI", "PAI", "SAI"]}, {code: "4B", sectors: ["ASI", "BLI", "DPI", "SAN"]}, {code: "4C", sectors: ["ASI", "BDI", "PAI", "SAN"]}, {code: "4D", "sectors": ["ASU", "BDP", "SUM", "SAS"]}, {code: "4E", "sectors": ["BDI", "PAL", "PAU", "SAI"]},
-          {code: "5A", sectors: ["ASI", "BLI", "DGI", "PAI", "SAN"]}, {code: "5B", sectors: ["BLI", "DGI", "PAL", "PAU", "SAI"]}, {code: "5C", "sectors": ["BLI", "DGL", "DGU", "PAI", "SAI"]}, {code: "5D", "sectors": ["ASU", "BDI", "PAI", "SUM", "SAS"]}, {code: "5E", "sectors": ["ASU", "BLI", "DPI", "SUM", "SAS"]}, {code: "5F", "sectors": ["ASI", "BDI", "PAL", "PAU", "SAN"]},
-          {code: "6A", sectors: ["ASI", "BLI", "DGL", "DGU", "PAI", "SAN"]}, {code: "6B", sectors: ["ASI", "BLI", "DGI", "PAL", "PAU", "SAN"]}, {code: "6C", "sectors": ["BLI", "DGL", "DGU", "PAL", "PAU", "SAI"]}, {code: "6D", "sectors": ["BLL", "BLU", "DGL", "DGU", "PAI", "SAI"]}, {code: "6E", "sectors": ["BLL", "BLU", "DGI", "PAL", "PAU", "SAI"]}, {code: "6F1", "sectors": ["ASL", "ASU", "BLI", "DGI", "PAI", "SAN"]}, {code: "6F2", "sectors": ["ASU", "BLI", "DGI", "PAI", "SUM", "SAS"]}, {code: "6G", "sectors": ["ASI", "BLL", "BLU", "DGI", "PAI", "SAN"]},
-          {code: "7A", sectors: ["ASI", "BLI", "DGL", "DGU", "PAL", "PAU", "SAN"]}, {code: "7B", "sectors": ["ASI", "BLL", "BLU", "DGL", "DGU", "PAI", "SAN"]}, {code: "7C", "sectors": ["ASI", "BLL", "BLU", "DGI", "PAL", "PAU", "SAN"]}, {code: "7D", "sectors": ["BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAI"]}, {code: "7E1", "sectors": ["ASL", "ASU", "BLI", "DGL", "DGU", "PAI", "SAN"]}, {code: "7E2", "sectors": ["ASU", "BLI", "DGL", "DGU", "PAI", "SUM", "SAS"]}, {code: "7F1", "sectors": ["ASL", "ASU", "BLI", "DGI", "PAL", "PAU", "SAN"]}, {code: "7F2", "sectors": ["ASU", "BLI", "DGI", "PAL", "PAU", "SUM", "SAS"]}, {code: "7G1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGI", "PAI", "SAN"]}, {code: "7G2", "sectors": ["ASU", "BLL", "BLU", "DGI", "PAI", "SUM", "SAS"]},
-          {code: "8A", sectors: ["ASI", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAN"]}, {code: "8B1", "sectors": ["ASL", "ASU", "BLI", "DGL", "DGU", "PAL", "PAU", "SAN"]}, {code: "8B2", "sectors": ["ASU", "BLI", "DGL", "DGU", "PAL", "PAU", "SUM", "SAS"]}, {code: "8C1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAI", "SAN"]}, {code: "8C2", "sectors": ["ASU", "BLL", "BLU", "DGL", "DGU", "PAI", "SUM", "SAS"]}, {code: "8D1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGI", "PAL", "PAU", "SAN"]}, {code: "8D2", "sectors": ["ASU", "BLL", "BLU", "DGI", "PAL", "PAU", "SUM", "SAS"]},
-          {code: "9A1", "sectors": ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAN"]}, {code: "9A2", "sectors": ["ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SUM", "SAS"]}
+          { code: "1A", sectors: ["R1I"] },
+          { code: "2A", sectors: ["DPI", "SAB"] },
+          { code: "2B", sectors: ["BDP", "SAI"] },
+          { code: "3A", sectors: ["DGI", "PAI", "SAB"] },
+          { code: "3B", sectors: ["BLI", "DPI", "SAI"] },
+          { code: "3C", sectors: ["BDI", "PAI", "SAI"] },
+          { code: "3D", sectors: ["ASI", "BDP", "SAN"] },
+          { code: "4A", sectors: ["BLI", "DGI", "PAI", "SAI"] },
+          { code: "4B", sectors: ["ASI", "BLI", "DPI", "SAN"] },
+          { code: "4C", sectors: ["ASI", "BDI", "PAI", "SAN"] },
+          { code: "4D", sectors: ["ASU", "BDP", "SUM", "SAS"] },
+          { code: "4E", sectors: ["BDI", "PAL", "PAU", "SAI"] },
+          { code: "5A", sectors: ["ASI", "BLI", "DGI", "PAI", "SAN"] },
+          { code: "5B", sectors: ["BLI", "DGI", "PAL", "PAU", "SAI"] },
+          { code: "5C", sectors: ["BLI", "DGL", "DGU", "PAI", "SAI"] },
+          { code: "5D", sectors: ["ASU", "BDI", "PAI", "SUM", "SAS"] },
+          { code: "5E", sectors: ["ASU", "BLI", "DPI", "SUM", "SAS"] },
+          { code: "5F", sectors: ["ASI", "BDI", "PAL", "PAU", "SAN"] },
+          { code: "6A", sectors: ["ASI", "BLI", "DGL", "DGU", "PAI", "SAN"] },
+          { code: "6B", sectors: ["ASI", "BLI", "DGI", "PAL", "PAU", "SAN"] },
+          { code: "6C", sectors: ["BLI", "DGL", "DGU", "PAL", "PAU", "SAI"] },
+          { code: "6D", sectors: ["BLL", "BLU", "DGL", "DGU", "PAI", "SAI"] },
+          { code: "6E", sectors: ["BLL", "BLU", "DGI", "PAL", "PAU", "SAI"] },
+          { code: "6F1", sectors: ["ASL", "ASU", "BLI", "DGI", "PAI", "SAN"] },
+          { code: "6F2", sectors: ["ASU", "BLI", "DGI", "PAI", "SUM", "SAS"] },
+          { code: "6G", sectors: ["ASI", "BLL", "BLU", "DGI", "PAI", "SAN"] },
+          { code: "7A", sectors: ["ASI", "BLI", "DGL", "DGU", "PAL", "PAU", "SAN"] },
+          { code: "7B", sectors: ["ASI", "BLL", "BLU", "DGL", "DGU", "PAI", "SAN"] },
+          { code: "7C", sectors: ["ASI", "BLL", "BLU", "DGI", "PAL", "PAU", "SAN"] },
+          { code: "7D", sectors: ["BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAI"] },
+          { code: "7E1", sectors: ["ASL", "ASU", "BLI", "DGL", "DGU", "PAI", "SAN"] },
+          { code: "7E2", sectors: ["ASU", "BLI", "DGL", "DGU", "PAI", "SUM", "SAS"] },
+          { code: "7F1", sectors: ["ASL", "ASU", "BLI", "DGI", "PAL", "PAU", "SAN"] },
+          { code: "7F2", sectors: ["ASU", "BLI", "DGI", "PAL", "PAU", "SUM", "SAS"] },
+          { code: "7G1", sectors: ["ASL", "ASU", "BLL", "BLU", "DGI", "PAI", "SAN"] },
+          { code: "7G2", sectors: ["ASU", "BLL", "BLU", "DGI", "PAI", "SUM", "SAS"] },
+          { code: "8A", sectors: ["ASI", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAN"] },
+          { code: "8B1", sectors: ["ASL", "ASU", "BLI", "DGL", "DGU", "PAL", "PAU", "SAN"] },
+          { code: "8B2", sectors: ["ASU", "BLI", "DGL", "DGU", "PAL", "PAU", "SUM", "SAS"] },
+          { code: "8C1", sectors: ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAI", "SAN"] },
+          { code: "8C2", sectors: ["ASU", "BLL", "BLU", "DGL", "DGU", "PAI", "SUM", "SAS"] },
+          { code: "8D1", sectors: ["ASL", "ASU", "BLL", "BLU", "DGI", "PAL", "PAU", "SAN"] },
+          { code: "8D2", sectors: ["ASU", "BLL", "BLU", "DGI", "PAL", "PAU", "SUM", "SAS"] },
+          { code: "9A1", sectors: ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SAN"] },
+          { code: "9A2", sectors: ["ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU", "SUM", "SAS"] }
         ],
         R2: [
-          {code: "1A", sectors: ["R2I"]}, {code: "2A", sectors: ["CZI", "ZTI"]}, {code: "2B", sectors: ["SWI", "TZI"]}, {code: "2C", sectors: ["SEI", "ZMI"]},
-          {code: "3A", sectors: ["TCI", "TZI", "ZMI"]}, {code: "3B", sectors: ["CJI", "TZI", "ZTI"]}, {code: "3C", sectors: ["CZI", "TLI", "ZMI"]},
-          {code: "4A", sectors: ["CJI", "TLI", "TZI", "ZMI"]}, {code: "4B1", sectors: ["CZI", "TLI", "ZML", "ZUM"]}, {code: "4B2", sectors: ["CZI", "TLI", "ZLM", "ZMU"]}, {code: "4C", sectors: ["CZI", "TLL", "TLU", "ZMI"]},
-          {code: "5A1", sectors: ["CJI", "TLI", "TZI", "ZML", "ZUM"]}, {code: "5A2", sectors: ["CJI", "TLI", "TZI", "ZLM", "ZMU"]}, {code: "5B", sectors: ["CJL", "CJU", "TLI", "TZI", "ZMI"]}, {code: "5C", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZMI"]}, {code: "5D", sectors: ["CJI", "TLL", "TLU", "TZI", "ZMI"]},
-          {code: "6A1", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZML", "ZUM"]}, {code: "6A2", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]}, {code: "6B1", sectors: ["CJL", "CJU", "TLI", "TZI", "ZML", "ZUM"]}, {code: "6B2", sectors: ["CJL", "CJU", "TLI", "TZI", "ZLM", "ZMU"]}, {code: "6C", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZMI"]}, {code: "6D1", sectors: ["CJI", "TLL", "TLU", "TZI", "ZML", "ZUM"]}, {code: "6D2", sectors: ["CJI", "TLL", "TLU", "TZI", "ZLM", "ZMU"]}, {code: "6E", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZMI"]}, {code: "6F", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZMI"]},
-          {code: "7A1", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"]}, {code: "7A2", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZLM", "ZMU"]}, {code: "7B1", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]}, {code: "7B2", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]}, {code: "7C1", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZML", "ZUM"]}, {code: "7C2", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZLM", "ZMU"]}, {code: "7D", "sectors": ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZMI"]},
-          {code: "8A1", sectors: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"]}, {code: "8A2", sectors: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"]}
+          { code: "1A", sectors: ["R2I"] },
+          { code: "2A", sectors: ["CZI", "ZTI"] },
+          { code: "2B", sectors: ["SWI", "TZI"] },
+          { code: "2C", sectors: ["SEI", "ZMI"] },
+          { code: "3A", sectors: ["TCI", "TZI", "ZMI"] },
+          { code: "3B", sectors: ["CJI", "TZI", "ZTI"] },
+          { code: "3C", sectors: ["CZI", "TLI", "ZMI"] },
+          { code: "4A", sectors: ["CJI", "TLI", "TZI", "ZMI"] },
+          { code: "4B1", sectors: ["CZI", "TLI", "ZML", "ZUM"] },
+          { code: "4B2", sectors: ["CZI", "TLI", "ZLM", "ZMU"] },
+          { code: "4C", sectors: ["CZI", "TLL", "TLU", "ZMI"] },
+          { code: "5A1", sectors: ["CJI", "TLI", "TZI", "ZML", "ZUM"] },
+          { code: "5A2", sectors: ["CJI", "TLI", "TZI", "ZLM", "ZMU"] },
+          { code: "5B", sectors: ["CJL", "CJU", "TLI", "TZI", "ZMI"] },
+          { code: "5C", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZMI"] },
+          { code: "5D", sectors: ["CJI", "TLL", "TLU", "TZI", "ZMI"] },
+          { code: "6A1", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZML", "ZUM"] },
+          { code: "6A2", sectors: ["CJI", "TER", "TLI", "ZGZ", "ZLM", "ZMU"] },
+          { code: "6B1", sectors: ["CJL", "CJU", "TLI", "TZI", "ZML", "ZUM"] },
+          { code: "6B2", sectors: ["CJL", "CJU", "TLI", "TZI", "ZLM", "ZMU"] },
+          { code: "6C", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZMI"] },
+          { code: "6D1", sectors: ["CJI", "TLL", "TLU", "TZI", "ZML", "ZUM"] },
+          { code: "6D2", sectors: ["CJI", "TLL", "TLU", "TZI", "ZLM", "ZMU"] },
+          { code: "6E", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZMI"] },
+          { code: "6F", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZMI"] },
+          { code: "7A1", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"] },
+          { code: "7A2", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZLM", "ZMU"] },
+          { code: "7B1", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"] },
+          { code: "7B2", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"] },
+          { code: "7C1", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZML", "ZUM"] },
+          { code: "7C2", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZLM", "ZMU"] },
+          { code: "7D", sectors: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZMI"] },
+          { code: "8A1", sectors: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZUM"] },
+          { code: "8A2", sectors: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZLM", "ZMU"] }
         ]
       },
       volumes: {
@@ -173,12 +237,21 @@
       },
       aggregations: {
         R1: {
-          ASL: ["ASL"], ASU: ["ASU"], BLL: ["BLL"], BLU: ["BLU"], DGL: ["DGL"], DGU: ["DGU"], PAL: ["PAL"], PAU: ["PAU"],
-          ABI: ["ASL", "ASU", "BLL", "BLU"], ASI: ["ASL", "ASU"], BDI: ["BLL", "BLU", "DGL", "DGU"],
-          BDP: ["BLL", "BLU", "DGL", "DGU", "PAL", "PAU"], BLI: ["BLL", "BLU"], DGI: ["DGL", "DGU"],
-          DPI: ["DGL", "DGU", "PAL", "PAU"], NEI: ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
-          PAI: ["PAL", "PAU"], R1I: ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
-          SAB: ["ASL", "ASU", "BLL", "BLU"], SAI: ["ASL", "ASU"], SAN: [], SUM: [], SAS: ["ASL"]
+          ASL: ["ASL"], ASU: ["ASU"], BLL: ["BLL"], BLU: ["BLU"], 
+          DGL: ["DGL"], DGU: ["DGU"], PAL: ["PAL"], PAU: ["PAU"],
+          ABI: ["ASL", "ASU", "BLL", "BLU"], 
+          ASI: ["ASL", "ASU"], 
+          BDI: ["BLL", "BLU", "DGL", "DGU"],
+          BDP: ["BLL", "BLU", "DGL", "DGU", "PAL", "PAU"], 
+          BLI: ["BLL", "BLU"], 
+          DGI: ["DGL", "DGU"],
+          DPI: ["DGL", "DGU", "PAL", "PAU"], 
+          NEI: ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
+          PAI: ["PAL", "PAU"], 
+          R1I: ["ASL", "ASU", "BLL", "BLU", "DGL", "DGU", "PAL", "PAU"],
+          SAB: ["ASL", "ASU", "BLL", "BLU"], 
+          SAI: ["ASL", "ASU"], 
+          SAN: [], SUM: [], SAS: ["ASL"]
         },
         R2: {
           CJL: ["CJL"], CJU: ["CJU"], TER: ["TER"], TLL: ["TLL"], TLU: ["TLU"], ZGZ: ["ZGZ"],
@@ -187,9 +260,13 @@
           R2I: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZMM", "ZMU"],
           SEI: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ"],
           SWI: ["CJL", "CJU", "TLL", "TLU", "ZML", "ZMM", "ZMU"],
-          TCI: ["CJL", "CJU", "TLL", "TLU"], TLI: ["TLL", "TLU"], TZI: ["TER", "ZGZ"],
-          ZLM: ["ZML", "ZMM"], ZMI: ["ZML", "ZMM", "ZMU"],
-          ZTI: ["TLL", "TLU", "ZML", "ZMM", "ZMU"], ZUM: ["ZMM", "ZMU"]
+          TCI: ["CJL", "CJU", "TLL", "TLU"], 
+          TLI: ["TLL", "TLU"], 
+          TZI: ["TER", "ZGZ"],
+          ZLM: ["ZML", "ZMM"], 
+          ZMI: ["ZML", "ZMM", "ZMU"],
+          ZTI: ["TLL", "TLU", "ZML", "ZMM", "ZMU"], 
+          ZUM: ["ZMM", "ZMU"]
         }
       },
       variants: {}
@@ -199,22 +276,22 @@
     let selectedVolume = null, draggedVolume = null;
     let currentMatch = null, currentNames = [], loadedConfig = null;
     
-    const $ = s => document.querySelector(s);     const $$ = s => [...document.querySelectorAll(s)];
+    const $ = s => document.querySelector(s);
+    const $$ = s => [...document.querySelectorAll(s)];
     const sortKey = a => [...a].sort().join('|');
     const configs = () => data.configs[route];
     const volumes = () => data.volumes[route];
 
-    // --- FUNCIÓN DE COLORES POR FAMILIA ---
     function getVolumeStyle(vol) {
       const fams = {
-        AS: { b:'#dcfce7', c:'#86efac', t:'#14532d', db:'#064e3b', dc:'#059669', dt:'#a7f3d0' }, // Asturias: Verde
-        BL: { b:'#e0f2fe', c:'#7dd3fc', t:'#0c4a6e', db:'#0c4a6e', dc:'#0284c7', dt:'#bae6fd' }, // Bilbao: Azul
-        DG: { b:'#ffe4e6', c:'#fda4af', t:'#881337', db:'#4c0519', dc:'#e11d48', dt:'#fecdd3' }, // Domingo: Rojo/Rosado
-        PA: { b:'#fef3c7', c:'#fcd34d', t:'#78350f', db:'#451a03', dc:'#d97706', dt:'#fde68a' }, // Pamplona: Amarillo/Naranja
-        CJ: { b:'#f3e8ff', c:'#d8b4fe', t:'#4c1d95', db:'#2e1065', dc:'#9333ea', dt:'#e9d5ff' }, // Castejón: Morado
-        TZ: { b:'#ffedd5', c:'#fdba74', t:'#7c2d12', db:'#431407', dc:'#ea580c', dt:'#fed7aa' }, // Teruel/ZGZ: Naranja
-        TL: { b:'#ccfbf1', c:'#5eead4', t:'#134e4a', db:'#042f2e', dc:'#0d9488', dt:'#99f6e4' }, // Toledo: Turquesa
-        ZM: { b:'#f1f5f9', c:'#cbd5e1', t:'#334155', db:'#0f172a', dc:'#475569', dt:'#cbd5e1' }  // Zamora: Gris azulado
+        AS: { b:'#dcfce7', c:'#86efac', t:'#14532d', db:'#064e3b', dc:'#059669', dt:'#a7f3d0' },
+        BL: { b:'#e0f2fe', c:'#7dd3fc', t:'#0c4a6e', db:'#0c4a6e', dc:'#0284c7', dt:'#bae6fd' },
+        DG: { b:'#ffe4e6', c:'#fda4af', t:'#881337', db:'#4c0519', dc:'#e11d48', dt:'#fecdd3' },
+        PA: { b:'#fef3c7', c:'#fcd34d', t:'#78350f', db:'#451a03', dc:'#d97706', dt:'#fde68a' },
+        CJ: { b:'#f3e8ff', c:'#d8b4fe', t:'#4c1d95', db:'#2e1065', dc:'#9333ea', dt:'#e9d5ff' },
+        TZ: { b:'#ffedd5', c:'#fdba74', t:'#7c2d12', db:'#431407', dc:'#ea580c', dt:'#fed7aa' },
+        TL: { b:'#ccfbf1', c:'#5eead4', t:'#134e4a', db:'#042f2e', dc:'#0d9488', dt:'#99f6e4' },
+        ZM: { b:'#f1f5f9', c:'#cbd5e1', t:'#334155', db:'#0f172a', dc:'#475569', dt:'#cbd5e1' }
       };
       
       let f = null;
@@ -332,10 +409,14 @@
 
     function renderPalette() {
       const u = used();
-      $('#palette').innerHTML = volumes().map(v => 
-        `<button class="volume ${u.has(v) ? 'used' : ''} ${selectedVolume === v ? 'selected' : ''}" 
-                 style="${getVolumeStyle(v)}" data-volume="${v}" draggable="${!u.has(v)}">${v}</button>`
-      ).join('');
+      const buttonsHTML = volumes().map(v => {
+        const isUsed = u.has(v) ? 'used' : '';
+        const isSelected = selectedVolume === v ? 'selected' : '';
+        const draggable = !u.has(v);
+        return `<button class="volume ${isUsed} ${isSelected}" style="${getVolumeStyle(v)}" data-volume="${v}" draggable="${draggable}">${v}</button>`;
+      }).join('');
+      
+      $('#palette').innerHTML = buttonsHTML;
       $('#availableCount').textContent = `${volumes().length - u.size} disponibles`;
 
       $$('.volume').forEach(el => {
@@ -380,37 +461,46 @@
     }
 
     function renderPositions() {
-      $('#positions').innerHTML = positions.map((p, i) => {
+      const html = positions.map((p, i) => {
         const name = currentNames[i];
+        const isUnknown = p.length && !name ? 'unknown' : '';
+        const groupText = p.length ? (name || 'Sin agrupar') : '—';
+        
+        const buttonsHTML = p.map(v => 
+          `<button class="placed" style="${getVolumeStyle(v)}" data-placed="${v}" draggable="true" title="Clic o arrastrar para devolver">${v}</button>`
+        ).join('');
+
         return `
           <div class="position">
             <div class="pos-num">${i + 1}</div>
             <div class="dropzone ${p.length ? '' : 'empty'}" data-index="${i}">
-              ${p.map(v => `<button class="placed" style="${getVolumeStyle(v)}" data-placed="${v}" draggable="true" title="Clic o arrastrar para devolver">${v}</button>`).join('')}
+              ${buttonsHTML}
             </div>
-            <div class="group-name ${p.length && !name ? 'unknown' : ''}">
-              ${p.length ? (name || 'Sin agrupar') : '—'}
-            </div>
-            <button class="action-icon" data-clear="${i}" title="Vaciar">🧹</button>
-            <button class="action-icon" data-remove="${i}" title="Eliminar">×</button>
+            <div class="group-name ${isUnknown}">${groupText}</div>
+            <button class="action-icon" data-clear="${i}" title="Vaciar">&#129529;</button>
+            <button class="action-icon" data-remove="${i}" title="Eliminar">&#10006;</button>
           </div>
         `;
       }).join('');
+      
+      $('#positions').innerHTML = html;
 
-      $$('.dropzone').forEach(z => {         const i = Number(z.dataset.index);                  z.addEventListener('click', () => {           if (selectedVolume) place(selectedVolume, i);         });          z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });         z.addEventListener('dragleave', () => z.classList.remove('over'));         z.addEventListener('drop', e => {           e.preventDefault();           z.classList.remove('over');           const name = e.dataTransfer.getData('text/plain') \vert{}\vert{} draggedVolume;           place(name, i);         });       });        $$
+      $$('.dropzone').forEach(z => {         const i = Number(z.dataset.index);         z.addEventListener('click', () => {           if (selectedVolume) place(selectedVolume, i);         });         z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });         z.addEventListener('dragleave', () => z.classList.remove('over'));         z.addEventListener('drop', e => {           e.preventDefault();           z.classList.remove('over');           const name = e.dataTransfer.getData('text/plain') \vert{}\vert{} draggedVolume;           place(name, i);         });       });        $$
 ('.placed').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
           const name = e.currentTarget.dataset.placed;
           place(name, -1);
         });
-        
         el.addEventListener('dragstart', e => {
           draggedVolume = e.currentTarget.dataset.placed;
           e.dataTransfer.setData('text/plain', draggedVolume);
           e.currentTarget.style.opacity = '0.4';
         });
-        el.addEventListener('dragend', e => { e.currentTarget.style.opacity = '1'; draggedVolume = null; });
+        el.addEventListener('dragend', e => { 
+          e.currentTarget.style.opacity = '1'; 
+          draggedVolume = null; 
+        });
       });
 
       $$('[data-clear]').forEach(b => b.addEventListener('click', e => {         positions[Number(e.currentTarget.dataset.clear)] = [];          loadedConfig = null;         render();       }));        $$
@@ -442,11 +532,14 @@
         code.textContent = '—'; state.textContent = 'Distribuye los volúmenes.';
       }
 
-      $('#groupPills').innerHTML = (currentMatch ? currentMatch.sectors : activeNames).map(n => `<span class="group-pill">${n}</span>`).join('') || '';
+      const pills = currentMatch ? currentMatch.sectors : activeNames;
+      $('#groupPills').innerHTML = pills.map(n => `<span class="group-pill">${n}</span>`).join('');
     }
 
     function renderSelect() {
-      $('#configSelect').innerHTML = configs().map((c, i) => `<option value="${i}">${c.code} · ${c.sectors.join(' · ')}</option>`).join('');
+      $('#configSelect').innerHTML = configs().map((c, i) => 
+        `<option value="${i}">${c.code} · ${c.sectors.join(' · ')}</option>`
+      ).join('');
     }
 
     function render() {
@@ -460,20 +553,28 @@
 
     $('#exportBtn').addEventListener('click', () => {
       const active = positions.filter(p => p.length);
-      const names = currentNames.filter(n => n !== null);
-      let text = `✈️ Configureitor - ${route}\nEstado: ${$('#resultCode').textContent}\n\n`;
+      let text = `\u2708\uFE0F Configureitor - ${route}\nEstado: ${$('#resultCode').textContent}\n\n`;
       if (active.length === 0) text += "Sin volúmenes asignados.";
       else active.forEach((p, i) => { text += `Pos. ${i + 1}: ${currentNames[i] || 'Incompleta'} (${p.join(', ')})\n`; });
       navigator.clipboard.writeText(text).then(() => {
         const btn = $('#exportBtn');
-        const originalText = btn.textContent;
-        btn.textContent = '✅ Copiado';
-        setTimeout(() => { btn.textContent = originalText; }, 2000);
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '&#9989; Copiado';
+        setTimeout(() => { btn.innerHTML = originalText; }, 2000);
       });
     });
 
-    $('#addPos').addEventListener('click', () => { if (positions.length < MAX_POSITIONS) { positions.push([]); render(); } });
-    $('#reset').addEventListener('click', () => { positions = emptyPositions(); selectedVolume = null; loadedConfig = null; render(); });
+    $('#addPos').addEventListener('click', () => { 
+      if (positions.length < MAX_POSITIONS) { positions.push([]); render(); } 
+    });
+    
+    $('#reset').addEventListener('click', () => { 
+      positions = emptyPositions(); 
+      selectedVolume = null; 
+      loadedConfig = null; 
+      render(); 
+    });
+    
     $('#loadConfig').addEventListener('click', () => {
       const selectVal = Number($('#configSelect').value);
       const c = configs()[selectVal];
