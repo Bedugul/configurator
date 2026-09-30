@@ -35,20 +35,45 @@
     .card { background: var(--panel); border: 1px solid var(--card-border); border-radius: 15px; box-shadow: var(--shadow); overflow: hidden; }
     .card-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
     .card-body { padding: 14px; }
-    .palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .volume { min-height: 44px; border: 1px solid #8bb1c5; background: var(--paper); color: var(--ink); border-radius: 9px; font-weight: 850; display: grid; place-items: center; cursor: pointer; user-select: none; transition: .15s; }
+    
+    /* Configuración de color para Volúmenes y Casillas */
+    .volume, .placed {
+      --current-bg: var(--fam-bg, var(--paper));
+      --current-border: var(--fam-border, #8bb1c5);
+      --current-text: var(--fam-text, var(--ink));
+      background: var(--current-bg);
+      border: 1px solid var(--current-border);
+      color: var(--current-text);
+    }
+    .placed { --current-bg: var(--fam-bg, var(--btn-bg)); --current-border: var(--fam-border, #77a6be); }
+    
+    body.dark-theme .volume, body.dark-theme .placed {
+      --current-bg: var(--fam-dbg, var(--paper));
+      --current-border: var(--fam-dborder, #3d566b);
+      --current-text: var(--fam-dtext, var(--ink));
+    }
+
+    .palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; border: 2px dashed transparent; border-radius: 9px; padding: 4px; transition: .15s;}
+    .palette.over { border-color: var(--blue); background: #e7f6fd; }
+    body.dark-theme .palette.over { background: #0b2c47; }
+    
+    .volume { min-height: 44px; border-radius: 9px; font-weight: 850; display: grid; place-items: center; cursor: grab; user-select: none; transition: .15s; }
     .volume.used { opacity: .25; pointer-events: none; }
-    .volume.selected { border-color: var(--blue); background: #e7f6fd; box-shadow: 0 0 0 3px #8edcff55; transform: translateY(-1px); }
-    body.dark-theme .volume.selected { background: #0b2c47; }
+    .volume.selected { border-color: var(--blue) !important; box-shadow: 0 0 0 3px #8edcff55; transform: translateY(-1px); }
+    .volume.dragging { opacity: 0.4; }
+    
     .positions { padding: 12px; display: grid; gap: 9px; max-height: calc(100vh - 175px); overflow: auto; }
     .position { display: grid; grid-template-columns: 42px 1fr 116px auto auto; gap: 9px; align-items: center; min-height: 62px; }
     .pos-num { width: 34px; height: 34px; border-radius: 10px; background: var(--pos-num-bg); display: grid; place-items: center; font-weight: 900; }
     .dropzone { min-height: 56px; border: 1.5px dashed var(--muted); border-radius: 11px; background: var(--dropzone-bg); padding: 7px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; transition: .15s; cursor: pointer; }
-    .dropzone.over { border-color: var(--blue); background: #e7f6fd; }
-    .dropzone.empty:after { content: 'Haz clic para colocar aquí'; color: var(--muted); margin: auto; font-size: .82rem; }
-    .placed { border: 1px solid #77a6be; background: var(--btn-bg); border-radius: 7px; padding: 7px 9px; font-weight: 850; cursor: pointer; }
+    .dropzone.over { border-color: var(--blue); background: #e7f6fd; box-shadow: inset 0 0 0 2px #8edcff; }
+    body.dark-theme .dropzone.over { background: #0b2c47; }
+    .dropzone.empty:after { content: 'Haz clic o arrastra aquí'; color: var(--muted); margin: auto; font-size: .82rem; pointer-events: none; }
+    .placed { border-radius: 7px; padding: 7px 9px; font-weight: 850; cursor: grab; }
     .group-name { min-height: 42px; border-radius: 9px; background: #0b2940; color: white; display: grid; place-items: center; font-weight: 900; text-align: center; }
     .group-name.unknown { background: #f5e8db; color: #8a4510; }
+    body.dark-theme .group-name.unknown { background: #4a341c; color: #f5e8db; }
+    
     .action-icon { border: 0; background: transparent; color: var(--muted); font-size: 1.1rem; cursor: pointer; width: 32px; height: 32px; }
     .result { padding: 18px; background: linear-gradient(145deg, #071a2b, #0d3756); color: white; }
     .result-code { font-size: 3rem; font-weight: 950; margin: 9px 0 8px; color: var(--sky); }
@@ -60,6 +85,7 @@
     .load select { width: 100%; min-height: 42px; border: 1px solid var(--btn-border); border-radius: 9px; background: var(--btn-bg); padding: 8px; color: var(--ink); margin-bottom: 8px; }
     .legend { padding: 12px 16px; background: var(--dropzone-bg); border-top: 1px solid var(--line); color: var(--muted); font-size: .77rem; }
     .select-banner { display: none; margin-bottom: 10px; padding: 8px 12px; background: #e7f6fd; color: #087fb5; font-weight: 700; border-radius: 8px; font-size: .85rem; }
+    body.dark-theme .select-banner { background: #0b2c47; color: #9ec1d5; }
     .select-banner.active { display: block; }
   </style>
 </head>
@@ -78,14 +104,14 @@
   </header>
   <main>
     <div class="toolbar">
-      <div style="color:var(--muted)">Haz clic en un volumen y luego haz clic en una casilla para colocarlo.</div>
+      <div style="color:var(--muted)">Arrastra los volúmenes o haz clic para seleccionarlos y colocarlos.</div>
       <div>
         <button class="btn" id="exportBtn">📋 Exportar</button>
         <button class="btn primary" id="addPos">+ Posición</button>
         <button class="btn danger" id="reset">Limpiar</button>
       </div>
     </div>
-    <div id="selectBanner" class="select-banner">Volumen seleccionado: <span id="selectedVolText" style="text-decoration: underline;"></span>. Haz clic en una casilla de destino o haz clic de nuevo para cancelar.</div>
+    <div id="selectBanner" class="select-banner">Volumen seleccionado: <span id="selectedVolText" style="text-decoration: underline;"></span>. Haz clic en una casilla para colocarlo o arrástralo.</div>
     <div class="app">
       <section class="card">
         <div class="card-head"><h2>Volúmenes</h2><span id="availableCount"></span></div>
@@ -169,7 +195,8 @@
       variants: {}
     };
 
-    let route = 'R1', positions = emptyPositions(), selectedVolume = null;
+    let route = 'R1', positions = emptyPositions();
+    let selectedVolume = null, draggedVolume = null;
     let currentMatch = null, currentNames = [], loadedConfig = null;
     
     const $ = s => document.querySelector(s);     const $$ = s => [...document.querySelectorAll(s)];
@@ -177,13 +204,39 @@
     const configs = () => data.configs[route];
     const volumes = () => data.volumes[route];
 
+    // --- FUNCIÓN DE COLORES POR FAMILIA ---
+    function getVolumeStyle(vol) {
+      const fams = {
+        AS: { b:'#dcfce7', c:'#86efac', t:'#14532d', db:'#064e3b', dc:'#059669', dt:'#a7f3d0' }, // Asturias: Verde
+        BL: { b:'#e0f2fe', c:'#7dd3fc', t:'#0c4a6e', db:'#0c4a6e', dc:'#0284c7', dt:'#bae6fd' }, // Bilbao: Azul
+        DG: { b:'#ffe4e6', c:'#fda4af', t:'#881337', db:'#4c0519', dc:'#e11d48', dt:'#fecdd3' }, // Domingo: Rojo/Rosado
+        PA: { b:'#fef3c7', c:'#fcd34d', t:'#78350f', db:'#451a03', dc:'#d97706', dt:'#fde68a' }, // Pamplona: Amarillo/Naranja
+        CJ: { b:'#f3e8ff', c:'#d8b4fe', t:'#4c1d95', db:'#2e1065', dc:'#9333ea', dt:'#e9d5ff' }, // Castejón: Morado
+        TZ: { b:'#ffedd5', c:'#fdba74', t:'#7c2d12', db:'#431407', dc:'#ea580c', dt:'#fed7aa' }, // Teruel/ZGZ: Naranja
+        TL: { b:'#ccfbf1', c:'#5eead4', t:'#134e4a', db:'#042f2e', dc:'#0d9488', dt:'#99f6e4' }, // Toledo: Turquesa
+        ZM: { b:'#f1f5f9', c:'#cbd5e1', t:'#334155', db:'#0f172a', dc:'#475569', dt:'#cbd5e1' }  // Zamora: Gris azulado
+      };
+      
+      let f = null;
+      if (vol.startsWith('AS')) f = fams.AS;
+      else if (vol.startsWith('BL')) f = fams.BL;
+      else if (vol.startsWith('DG')) f = fams.DG;
+      else if (vol.startsWith('PA')) f = fams.PA;
+      else if (vol.startsWith('CJ')) f = fams.CJ;
+      else if (vol === 'TER' || vol === 'ZGZ') f = fams.TZ;
+      else if (vol.startsWith('TL')) f = fams.TL;
+      else if (vol.startsWith('ZM')) f = fams.ZM;
+
+      if(!f) return '';
+      return `--fam-bg:${f.b}; --fam-border:${f.c}; --fam-text:${f.t}; --fam-dbg:${f.db}; --fam-dborder:${f.dc}; --fam-dtext:${f.dt};`;
+    }
+
     function groupCandidates() {
       const out = [];
       for (const [name, parts] of Object.entries(data.aggregations[route])) out.push({ name, parts });
       return out;
     }
 
-    // Traduce un sector oficial a las combinaciones de volúmenes válidas que lo forman
     function getSectorSignatures(sector) {
       const sigs = [];
       if (data.aggregations[route][sector]) {
@@ -198,14 +251,10 @@
       currentMatch = null;
       currentNames = positions.map(() => null);
       
-      if (active.length === 0) {
-        loadedConfig = null;
-        return;
-      }
+      if (active.length === 0) { loadedConfig = null; return; }
       
       const activeSigs = active.map(p => [...p].sort().join(','));
       const activeSortedStr = [...activeSigs].sort().join('|');
-      
       let possibleMatches = [];
       
       for (const c of configs()) {
@@ -216,9 +265,7 @@
           
           const nextPoss = [];
           for (const poss of configPossibilities) {
-            for (const sig of sSigs) {
-              nextPoss.push([...poss, sig]);
-            }
+            for (const sig of sSigs) { nextPoss.push([...poss, sig]); }
           }
           configPossibilities.length = 0;
           configPossibilities.push(...nextPoss);
@@ -255,9 +302,7 @@
           for (const s of currentMatch.sectors) {
             if (usedSectors.has(s)) continue;
             if (getSectorSignatures(s).includes(sig)) {
-              foundName = s;
-              usedSectors.add(s);
-              break;
+              foundName = s; usedSectors.add(s); break;
             }
           }
         }
@@ -273,6 +318,7 @@
     function used() { return new Set(positions.flat()); }
 
     function place(name, index) {
+      if(!name) return;
       const next = positions.map(p => p.filter(x => x !== name));
       if (index >= 0 && index < next.length) {
         next[index].push(name);
@@ -287,7 +333,8 @@
     function renderPalette() {
       const u = used();
       $('#palette').innerHTML = volumes().map(v => 
-        `<button class="volume ${u.has(v) ? 'used' : ''} ${selectedVolume === v ? 'selected' : ''}" data-volume="${v}">${v}</button>`
+        `<button class="volume ${u.has(v) ? 'used' : ''} ${selectedVolume === v ? 'selected' : ''}" 
+                 style="${getVolumeStyle(v)}" data-volume="${v}" draggable="${!u.has(v)}">${v}</button>`
       ).join('');
       $('#availableCount').textContent = `${volumes().length - u.size} disponibles`;
 
@@ -299,8 +346,28 @@
           updateSelectionBanner();
           renderPalette();
         });
+
+        el.addEventListener('dragstart', e => {
+          draggedVolume = el.dataset.volume;
+          selectedVolume = null;
+          updateSelectionBanner();
+          renderPalette();
+          e.dataTransfer.setData('text/plain', draggedVolume);
+          el.classList.add('dragging');
+        });
+        el.addEventListener('dragend', el => el.target.classList.remove('dragging'));
       });
     }
+
+    const paletteZone = $('#palette');
+    paletteZone.addEventListener('dragover', e => { e.preventDefault(); paletteZone.classList.add('over'); });
+    paletteZone.addEventListener('dragleave', () => paletteZone.classList.remove('over'));
+    paletteZone.addEventListener('drop', e => {
+      e.preventDefault();
+      paletteZone.classList.remove('over');
+      const name = e.dataTransfer.getData('text/plain') || draggedVolume;
+      place(name, -1);
+    });
 
     function updateSelectionBanner() {
       const banner = $('#selectBanner');
@@ -319,7 +386,7 @@
           <div class="position">
             <div class="pos-num">${i + 1}</div>
             <div class="dropzone ${p.length ? '' : 'empty'}" data-index="${i}">
-              ${p.map(v => `<button class="placed" data-placed="${v}" title="Haz clic para devolver">${v}</button>`).join('')}
+              ${p.map(v => `<button class="placed" style="${getVolumeStyle(v)}" data-placed="${v}" draggable="true" title="Clic o arrastrar para devolver">${v}</button>`).join('')}
             </div>
             <div class="group-name ${p.length && !name ? 'unknown' : ''}">
               ${p.length ? (name || 'Sin agrupar') : '—'}
@@ -330,13 +397,20 @@
         `;
       }).join('');
 
-      $$('.dropzone').forEach(z => {         const i = Number(z.dataset.index);         z.addEventListener('click', () => {           if (selectedVolume) {             place(selectedVolume, i);           }         });       });        $$
+      $$('.dropzone').forEach(z => {         const i = Number(z.dataset.index);                  z.addEventListener('click', () => {           if (selectedVolume) place(selectedVolume, i);         });          z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });         z.addEventListener('dragleave', () => z.classList.remove('over'));         z.addEventListener('drop', e => {           e.preventDefault();           z.classList.remove('over');           const name = e.dataTransfer.getData('text/plain') \vert{}\vert{} draggedVolume;           place(name, i);         });       });        $$
 ('.placed').forEach(el => {
         el.addEventListener('click', e => {
           e.stopPropagation();
           const name = e.currentTarget.dataset.placed;
           place(name, -1);
         });
+        
+        el.addEventListener('dragstart', e => {
+          draggedVolume = e.currentTarget.dataset.placed;
+          e.dataTransfer.setData('text/plain', draggedVolume);
+          e.currentTarget.style.opacity = '0.4';
+        });
+        el.addEventListener('dragend', e => { e.currentTarget.style.opacity = '1'; draggedVolume = null; });
       });
 
       $$('[data-clear]').forEach(b => b.addEventListener('click', e => {         positions[Number(e.currentTarget.dataset.clear)] = [];          loadedConfig = null;         render();       }));        $$
@@ -383,6 +457,20 @@
       updateSelectionBanner();
       localStorage.setItem('configureitor_pos', JSON.stringify(positions));
     }
+
+    $('#exportBtn').addEventListener('click', () => {
+      const active = positions.filter(p => p.length);
+      const names = currentNames.filter(n => n !== null);
+      let text = `✈️ Configureitor - ${route}\nEstado: ${$('#resultCode').textContent}\n\n`;
+      if (active.length === 0) text += "Sin volúmenes asignados.";
+      else active.forEach((p, i) => { text += `Pos. ${i + 1}: ${currentNames[i] || 'Incompleta'} (${p.join(', ')})\n`; });
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = $('#exportBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '✅ Copiado';
+        setTimeout(() => { btn.textContent = originalText; }, 2000);
+      });
+    });
 
     $('#addPos').addEventListener('click', () => { if (positions.length < MAX_POSITIONS) { positions.push([]); render(); } });
     $('#reset').addEventListener('click', () => { positions = emptyPositions(); selectedVolume = null; loadedConfig = null; render(); });
