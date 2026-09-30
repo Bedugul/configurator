@@ -67,7 +67,7 @@
     .dropzone { min-height: 56px; border: 1.5px dashed var(--muted); border-radius: 11px; background: var(--dropzone-bg); padding: 7px; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; transition: .15s; cursor: pointer; }
     .dropzone.over { border-color: var(--blue); background: #e7f6fd; box-shadow: inset 0 0 0 2px #8edcff; }
     body.dark-theme .dropzone.over { background: #0b2c47; }
-    .dropzone.empty:after { content: 'Haz clic o arrastra aquí'; color: var(--muted); margin: auto; font-size: .82rem; pointer-events: none; }
+    .dropzone.empty:after { content: 'Arrastra aquí o haz clic'; color: var(--muted); margin: auto; font-size: .82rem; pointer-events: none; }
     .placed { border-radius: 7px; padding: 7px 9px; font-weight: 850; cursor: grab; }
     .group-name { min-height: 42px; border-radius: 9px; background: #0b2940; color: white; display: grid; place-items: center; font-weight: 900; text-align: center; }
     .group-name.unknown { background: #f5e8db; color: #8a4510; }
@@ -103,7 +103,7 @@
   </header>
   <main>
     <div class="toolbar">
-      <div style="color:var(--muted)">Arrastra los volúmenes o haz clic para seleccionarlos y colocarlos.</div>
+      <div style="color:var(--muted)">Arrastra los volúmenes a las casillas o haz clic para seleccionarlos.</div>
       <div>
         <button class="btn" id="exportBtn">Exportar</button>
         <button class="btn primary" id="addPos">+ Posición</button>
@@ -216,7 +216,7 @@
           { code: "6B2", sectors: ["CJL", "CJU", "TLI", "TZI", "ZLM", "ZMU"] },
           { code: "6C", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZMI"] },
           { code: "6D1", sectors: ["CJI", "TLL", "TLU", "TZI", "ZML", "ZUM"] },
-          { code: "6D2", sectors: ["CJI", "TLL", "TLU", "TZI", "ZLM", "ZMU"] },
+          { code: "6D2", sectors: ["CJI", "TLL", "TLU", "TZI", "ZML", "ZMU"] },
           { code: "6E", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZMI"] },
           { code: "6F", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZMI"] },
           { code: "7A1", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"] },
@@ -391,8 +391,6 @@
       }
     }
 
-    function used() { return new Set(positions.flat()); }
-
     function place(name, index) {
       if (!name) return;
       const next = positions.map(p => p.filter(x => x !== name));
@@ -411,7 +409,7 @@
       const buttonsHTML = volumes().map(v => {
         const isUsed = u.has(v) ? 'used' : '';
         const isSelected = selectedVolume === v ? 'selected' : '';
-        const draggable = !u.has(v);
+        const draggable = true; // Siempre permitimos arrastrar desde la paleta
         return '<button class="volume ' + isUsed + ' ' + isSelected + '" style="' + getVolumeStyle(v) + '" data-volume="' + v + '" draggable="' + draggable + '">' + v + '</button>';
       }).join('');
       
@@ -431,11 +429,13 @@
           draggedVolume = el.dataset.volume;
           selectedVolume = null;
           updateSelectionBanner();
-          renderPalette();
           e.dataTransfer.setData('text/plain', draggedVolume);
           el.classList.add('dragging');
         });
-        el.addEventListener('dragend', el => el.target.classList.remove('dragging'));
+        el.addEventListener('dragend', el => {
+          el.target.classList.remove('dragging');
+          draggedVolume = null;
+        });
       });
     }
 
@@ -466,7 +466,7 @@
         const groupText = p.length ? (name || 'Sin agrupar') : '--';
         
         const buttonsHTML = p.map(v => 
-          '<button class="placed" style="' + getVolumeStyle(v) + '" data-placed="' + v + '" draggable="true" title="Clic o arrastrar para devolver">' + v + '</button>'
+          '<button class="placed" style="' + getVolumeStyle(v) + '" data-placed="' + v + '" draggable="true" title="Arrastra o haz clic para quitar">' + v + '</button>'
         ).join('');
 
         return [
