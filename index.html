@@ -255,7 +255,8 @@
         R2: {
           CJL: ["CJL"], CJU: ["CJU"], TER: ["TER"], TLL: ["TLL"], TLU: ["TLU"], ZGZ: ["ZGZ"],
           ZML: ["ZML"], ZMM: ["ZMM"], ZMU: ["ZMU"],
-          CJI: ["CJL", "CJU"], CZI: ["CJU", "TER", "ZGZ"],
+          CJI: ["CJL", "CJU"], 
+          CZI: ["CJL", "CJU", "TER", "ZGZ"],
           R2I: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ", "ZML", "ZMM", "ZMU"],
           SEI: ["CJL", "CJU", "TER", "TLL", "TLU", "ZGZ"],
           SWI: ["CJL", "CJU", "TLL", "TLU", "ZML", "ZMM", "ZMU"],
@@ -391,7 +392,6 @@
       }
     }
 
-    // --- FUNCIÓN RECUPERADA ---
     function used() { 
       return new Set(positions.flat()); 
     }
