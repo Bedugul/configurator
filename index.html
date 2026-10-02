@@ -471,7 +471,7 @@
 
     const paletteZone = $('#palette');
     paletteZone.addEventListener('dragover', e => { e.preventDefault(); paletteZone.classList.add('over'); });
-    paletteZone.addEventListener('dragleave', () => paletteZone.classList.remove('over'); });
+    paletteZone.addEventListener('dragleave', () => { paletteZone.classList.remove('over'); });
     paletteZone.addEventListener('drop', e => {
       e.preventDefault();
       paletteZone.classList.remove('over');
@@ -520,7 +520,7 @@
           if (selectedVolume) place(selectedVolume, i);
         });
         z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });
-        z.addEventListener('dragleave', () => z.classList.remove('over'); });
+        z.addEventListener('dragleave', () => { z.classList.remove('over'); });
         z.addEventListener('drop', e => {
           e.preventDefault();
           z.classList.remove('over');
