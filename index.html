@@ -52,7 +52,7 @@
       --current-text: var(--fam-dtext, var(--ink));
     }
 
-    .palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; border: 2px dashed transparent; border-radius: 9px; padding: 4px; transition: .15s;}
+    .palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 8px; border: 2px dashed transparent; border-radius: 9px; padding: 4px; transition: .15s;}
     .palette.over { border-color: var(--blue); background: #e7f6fd; }
     body.dark-theme .palette.over { background: #0b2c47; }
     
@@ -86,6 +86,31 @@
     .select-banner { display: none; margin-bottom: 10px; padding: 8px 12px; background: #e7f6fd; color: #087fb5; font-weight: 700; border-radius: 8px; font-size: .85rem; }
     body.dark-theme .select-banner { background: #0b2c47; color: #9ec1d5; }
     .select-banner.active { display: block; }
+
+    /* --- RESPONSIVENESS (MÓVIL Y TABLET) --- */
+    @media (max-width: 1050px) {
+      .app { grid-template-columns: 1fr; gap: 20px; }
+      .positions { max-height: none; overflow: visible; }
+      header { flex-direction: column; gap: 12px; text-align: center; }
+      .toolbar { flex-direction: column; gap: 15px; }
+      .toolbar > div { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+    }
+
+    @media (max-width: 600px) {
+      .position { 
+        display: flex; flex-wrap: wrap; 
+        background: var(--dropzone-bg); 
+        padding: 10px; border-radius: 12px; 
+        border: 1px solid var(--line);
+        gap: 8px;
+      }
+      body.dark-theme .position { background: #0b1218; border-color: #2c4254; }
+      .pos-num { order: 1; flex: 0 0 34px; }
+      .dropzone { order: 2; flex: 1 1 calc(100% - 50px); }
+      .group-name { order: 3; flex: 1 1 100px; }
+      .action-icon[data-clear] { order: 4; flex: 0 0 32px; margin-left: auto; }
+      .action-icon[data-remove] { order: 5; flex: 0 0 32px; }
+    }
   </style>
 </head>
 <body>
@@ -414,7 +439,7 @@
       const buttonsHTML = volumes().map(v => {
         const isUsed = u.has(v) ? 'used' : '';
         const isSelected = selectedVolume === v ? 'selected' : '';
-        const draggable = true; // Siempre permitimos arrastrar desde la paleta
+        const draggable = true;
         return '<button class="volume ' + isUsed + ' ' + isSelected + '" style="' + getVolumeStyle(v) + '" data-volume="' + v + '" draggable="' + draggable + '">' + v + '</button>';
       }).join('');
       
@@ -446,7 +471,7 @@
 
     const paletteZone = $('#palette');
     paletteZone.addEventListener('dragover', e => { e.preventDefault(); paletteZone.classList.add('over'); });
-    paletteZone.addEventListener('dragleave', () => paletteZone.classList.remove('over'));
+    paletteZone.addEventListener('dragleave', () => paletteZone.classList.remove('over'); });
     paletteZone.addEventListener('drop', e => {
       e.preventDefault();
       paletteZone.classList.remove('over');
@@ -495,7 +520,7 @@
           if (selectedVolume) place(selectedVolume, i);
         });
         z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); });
-        z.addEventListener('dragleave', () => z.classList.remove('over'));
+        z.addEventListener('dragleave', () => z.classList.remove('over'); });
         z.addEventListener('drop', e => {
           e.preventDefault();
           z.classList.remove('over');
