@@ -216,7 +216,7 @@
           { code: "6B2", sectors: ["CJL", "CJU", "TLI", "TZI", "ZLM", "ZMU"] },
           { code: "6C", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZMI"] },
           { code: "6D1", sectors: ["CJI", "TLL", "TLU", "TZI", "ZML", "ZUM"] },
-          { code: "6D2", sectors: ["CJI", "TLL", "TLU", "TZI", "ZML", "ZMU"] },
+          { code: "6D2", sectors: ["CJI", "TLL", "TLU", "TZI", "ZLM", "ZMU"] },
           { code: "6E", sectors: ["CJI", "TER", "TLL", "TLU", "ZGZ", "ZMI"] },
           { code: "6F", sectors: ["CJL", "CJU", "TLL", "TLU", "TZI", "ZMI"] },
           { code: "7A1", sectors: ["CJL", "CJU", "TER", "TLI", "ZGZ", "ZML", "ZUM"] },
@@ -389,6 +389,11 @@
         }
         currentNames[i] = foundName;
       }
+    }
+
+    // --- FUNCIÓN RECUPERADA ---
+    function used() { 
+      return new Set(positions.flat()); 
     }
 
     function place(name, index) {
